@@ -1,77 +1,259 @@
-<!-- Name : Rodain Gouzlan Id: -->
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
-
-## ملاحظات المشروع (Multi-Branch Store System)
-
-- هذا المشروع يركز على **إدارة الفروع** (Block 3) ضمن نظام متعدد الفروع.
-- نموذج الموظفين الفعلي هو `User` وليس `Employee`، ويتم ربط الموظفين بالفروع عبر جدول `store_user`.
-- ملفات واجهة الفروع الأساسية:
-  - `resources/views/stores/*`
-  - `resources/js/store.js`
-  - `resources/css/store.css`
-- Stored Procedure الخاصة بالبحث عن الفروع مُعرّفة داخل Migration:
-  - `database/migrations/2026_03_12_000008_create_store_search_procedure.php`
-- ملفات البروشور تُخزَّن عادة في `storage/app/public` وتُعرَض عبر مسارات التطبيق.
-
 <p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="350" alt="Laravel Logo" />
+  <br/>
+  <strong>Multi-Branch Store Management System</strong>
+  <br/>
+  <sub>Enterprise-grade branch & inventory orchestration platform</sub>
 </p>
 
-## About Laravel
+<p align="center">
+  <img src="https://img.shields.io/badge/PHP-8.0+-777BB4?logo=php&logoColor=white" />
+  <img src="https://img.shields.io/badge/Laravel-9.x-FF2D20?logo=laravel&logoColor=white" />
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Vite-Frontend-646CFF?logo=vite&logoColor=white" />
+  <img src="https://img.shields.io/badge/PHPUnit-Tests-6C4AB6?logo=php&logoColor=white" />
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Table of Contents
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Database](#database)
+- [API](#api)
+- [Security](#security)
+- [Testing](#testing)
+- [Screenshots](#screenshots)
+- [License](#license)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Overview
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+The **Store Management System** is a full-stack Laravel application engineered for enterprises operating multiple retail branches, warehouses, and product lines. It provides a centralized dashboard to create, manage, and monitor branches across provinces, assign staff hierarchically, link products with per-branch inventory, and distribute digital brochures -- all secured by role-based access control.
 
-## Laravel Sponsors
+Built with **service-layer architecture**, the application isolates business logic from controllers, uses **database transactions** for state-critical mutations, and implements **stored procedures** for high-performance search. Every feature is covered by **Form Request validation**, **Eloquent policies**, and **middleware gates** to enforce strict authorization boundaries.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+---
 
-### Premium Partners
+## Architecture
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### Layered Responsibility
 
-## Contributing
+| Layer | Responsibility |
+|-------|----------------|
+| **Controllers** | HTTP orchestration only -- thin controllers that delegate to services. |
+| **Form Requests** | Strict input validation, authorization checks, and data sanitization. |
+| **Services** | Encapsulated business logic (CRUD, search, assignments, brochure handling). |
+| **Models** | Eloquent relationships, query scopes, accessors/mutators. |
+| **Policies** | Authorization gates tied to domain actions (view, create, update, delete). |
+| **Middleware** | Role enforcement (`admin`, `store_manager`, `store_employee`) and request timing. |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Key Patterns
 
-## Code of Conduct
+- **Repository-like Services** -- `StoreCrudService`, `StoreSearchService`, `StoreBrochureService`, etc., keep controllers under 50 lines of logic.
+- **Database Transactions** -- every create/update/delete operation runs inside a transaction to guarantee atomicity.
+- **Stored Procedures** -- branch search is offloaded to a MySQL stored procedure for complex filtering across relations.
+- **Chunked Uploads** -- brochure PDFs are uploaded in chunks to bypass server size limits and resume on failure.
+- **Scoped Queries** -- Eloquent local scopes (`filterName`, `filterProvince`, `filterStatus`, `filterPhone`) compose complex filters declaratively.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Features
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Branch (Store) Management
+- **CRUD Operations** -- create, read, update, and delete branches with full audit trails (`created_by`, `updated_by`).
+- **Advanced Search** -- real-time AJAX grid search by name, province, status, and phone number via stored procedure.
+- **Address & Contact Normalization** -- automatic phone formatting and English place-name normalization.
+
+### Staff & Assignment Engine
+- **Hierarchical Roles** -- `admin`, `store_manager`, `store_employee` with scoped access via `StoreScopeService`.
+- **Branch Assignments** -- sync managers and employees per branch through a dedicated assignment UI.
+- **Department Linking** -- branches and users are optionally bound to organizational departments.
+
+### Product-Branch Inventory
+- **Product Catalog** -- view products and the branches stocking them.
+- **Per-Branch Quantity** -- `product_store` pivot table tracks stock quantity at each branch.
+- **Warehouse Integration** -- branches can be linked to multiple warehouses through a `store_warehouse` pivot.
+
+### Digital Brochure Distribution
+- **PDF Viewer** -- embedded PDF.js viewer for in-app brochure rendering.
+- **Chunked Upload** -- resilient chunked upload of large brochure PDFs.
+- **Download & Inline Modes** -- serve brochures inline for preview or as attachment for download.
+
+### Authentication & API
+- **Session + Token Auth** -- dual authentication with Laravel Sanctum for web sessions and API tokens.
+- **Role-Based Middleware** -- `EnsureRole` middleware locks store routes to authorized roles only.
+- **Tab Session Isolation** -- custom `TabSessionCookie` middleware prevents cross-tab session collisions.
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Version |
+|-------|------------|---------|
+| Backend | PHP | ^8.0 |
+| Framework | Laravel | ^9.0 |
+| Auth | Laravel Sanctum | ^2.14 |
+| Frontend | Blade + Vanilla JS | -- |
+| Build | Laravel Mix | ^6.0 |
+| PDF Rendering | PDF.js | ^5.5 |
+| Headless PDF | Puppeteer / Browsershot | ^24.39 |
+| Testing | PHPUnit | ^9.5 |
+| Database | MySQL / MariaDB | ^8.0 |
+
+---
+
+## Installation
+
+### Prerequisites
+
+- PHP >= 8.0
+- Composer
+- MySQL >= 8.0
+- Node.js & NPM
+
+### Step-by-Step
+
+```bash
+# Clone
+git clone https://github.com/Rami-Saab/Store-Management.git
+cd Store-Management
+
+# PHP deps
+composer install
+
+# Node deps
+npm install
+
+# Environment
+cp .env.example .env
+php artisan key:generate
+
+# Database
+php artisan migrate --seed
+
+# Storage link
+php artisan storage:link
+
+# Compile assets
+npm run dev
+```
+
+---
+
+## Database
+
+### Core Tables
+
+| Table | Purpose |
+|-------|---------|
+| `users` | Staff accounts with role pivots |
+| `roles` / `permissions` | RBAC definitions |
+| `role_user` | User-to-role assignments |
+| `permission_role` | Role-to-permission mappings |
+| `stores` | Branch records with audit fields |
+| `provinces` | Geographic hierarchy |
+| `departments` | Organizational units |
+| `products` | Product catalog |
+| `product_store` | Many-to-many with stock `quantity` |
+| `warehouses` | Inventory locations |
+| `store_warehouse` | Branch-to-warehouse links |
+| `store_user` | Branch staff assignments |
+| `assignment_requests` | Assignment change workflow |
+
+### Stored Procedure
+
+`SearchStores` -- parameterized search across stores by name, province, status, and phone digits, returning paginated results with manager and province preloaded.
+
+---
+
+## API
+
+### Authentication
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/login` | Session login |
+| POST | `/logout` | Session logout |
+| POST | `/auth/token/login` | Sanctum token login |
+| GET  | `/auth/token` | Issue token from session |
+| POST | `/auth/token/logout` | Revoke token |
+
+### Store Management (requires `admin`, `store_manager`, or `store_employee`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET    | `/stores` | Grid listing with AJAX search |
+| GET    | `/stores/create` | Create form |
+| POST   | `/stores` | Persist new branch |
+| GET    | `/stores/{store}` | Branch detail |
+| GET    | `/stores/{store}/edit` | Edit form |
+| PUT    | `/stores/{store}` | Update branch |
+| DELETE | `/stores/{store}` | Delete (guarded by constraints) |
+| GET    | `/stores/{store}/assignments` | Staff assignment page |
+| PUT    | `/stores/{store}/assignments` | Sync manager + employees |
+| GET    | `/stores/{store}/products` | Linked products page |
+| PUT    | `/stores/{store}/products` | Sync products + quantities |
+| GET    | `/stores/{store}/brochure` | Inline PDF viewer |
+| GET    | `/stores/{store}/brochure/download` | Download PDF |
+| POST   | `/stores/brochure/upload-chunk` | Chunked upload |
+
+### General
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET    | `/dashboard` | Analytics dashboard |
+| GET    | `/search` | Global search |
+| GET    | `/products/{product}` | Product detail with branch links |
+
+---
+
+## Security
+
+### Role Hierarchy
+
+| Role | Capabilities |
+|------|--------------|
+| `admin` | Full CRUD, assignments, product linking, brochure upload |
+| `store_manager` | View assigned branches, limited edit, manage own staff |
+| `store_employee` | View-only access to assigned branches |
+
+### Defense Layers
+
+1. **Middleware** -- `EnsureRole` validates role before route entry.
+2. **Form Requests** -- `StoreRequest` / `UpdateStoreRequest` sanitize and validate all input.
+3. **Policies** -- `StorePolicy` checks ownership, role scope, and state constraints before action.
+4. **Transactions** -- `StoreCrudService` wraps mutations in DB transactions to prevent partial writes.
+5. **Input Normalization** -- `EnglishInputNormalizer` and `UserContact::phone()` standardize text and phone data.
+
+---
+
+## Testing
+
+```bash
+# Run PHPUnit suite
+php artisan test
+
+# Feature tests cover
+# - Store policy authorization
+# - CRUD flows with validation
+# - Assignment synchronization
+# - Search result accuracy
+```
+
+---
+
+## Screenshots
+
+> _Screenshots will be added here to showcase the dashboard, store grid, detail view, assignment panel, and brochure viewer._
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
