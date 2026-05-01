@@ -1,0 +1,47 @@
+Employee Names
+Source: config/locked_users.php
+
+System Administrator (1)
+- Rodain | Password: 777
+
+Store Managers (6)
+- Khalil Al Yasin | Password: 999
+- Ahmed Al Hassan | Password: 999
+- Mohammad Al Ali | Password: 999
+- Ali Al Masri | Password: 999
+- Omar Al Shami | Password: 999
+- Youssef Al Khatib | Password: 999
+
+Store Employees (32)
+- Lina Al Darwish | Password: 12345
+- Samir Al Saad | Password: 12345
+- Rami Al Qadi | Password: 12345
+- Nour Al Hakim | Password: 12345
+- Wissam Saed | Password: 12345
+- Hadi Al Latif | Password: 12345
+- Samira Al Nouri | Password: 12345
+- Khaled Al Basha | Password: 12345
+- Hassan Al Najjar | Password: 12345
+- Hussein Al Azzam | Password: 12345
+- Ibrahim Al Hamwi | Password: 12345
+- Mustafa Al Rifai | Password: 12345
+- Nasser Al Halabi | Password: 12345
+- Tarek Al Deeb | Password: 12345
+- Bilal Al Nabulsi | Password: 12345
+- Karim Al Karam | Password: 12345
+- Ziad Al Asaad | Password: 12345
+- Hadi Al Zayani | Password: 12345
+- Fadi Al Jaber | Password: 12345
+- Walid Al Sayegh | Password: 12345
+- Maher Al Husseini | Password: 12345
+- Hamza Al Salman | Password: 12345
+- Saeed Al Fares | Password: 12345
+- Adel Al Sharif | Password: 12345
+- Sami Al Hariri | Password: 12345
+- Rana Al Hamad | Password: 12345
+- Maya Al Saleh | Password: 12345
+- Yara Al Haj | Password: 12345
+- Rasha Al Khalil | Password: 12345
+- Nabil Al Zain | Password: 12345
+- Bassam Al Rawi | Password: 12345
+- Salma Al Khatib | Password: 12345
