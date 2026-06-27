@@ -1,0 +1,82 @@
+<?php
+
+return [
+    // Admins
+    [
+        'name' => 'Rodain',
+        'password' => '777',
+        'department' => 'administration',
+        'job_title' => 'system administrator',
+        'role' => 'admin',
+        'phone' => '0999000100',
+        'status' => 'active',
+    ],
+    [
+        'name' => 'Lina Al Darwish',
+        'password' => '12345',
+        'department' => 'store_management',
+        'job_title' => 'store_employee',
+        'role' => 'store_employee',
+        'phone' => '0999000001',
+        'status' => 'active',
+    ],
+
+    // Store Employees (formerly department roles)
+    [
+        'name' => 'Samir Al Saad',
+        'password' => '12345',
+        'department' => 'store_management',
+        'job_title' => 'store_employee',
+        'role' => 'store_employee',
+        'phone' => '0999001011',
+        'status' => 'active',
+    ],
+    [
+        'name' => 'Rami Al Qadi',
+        'password' => '12345',
+        'department' => 'store_management',
+        'job_title' => 'store_employee',
+        'role' => 'store_employee',
+        'phone' => '0999001012',
+        'status' => 'active',
+    ],
+
+    // Store Managers
+    ['name' => 'Khalil Al Yasin', 'password' => '999', 'department' => 'store_management', 'job_title' => 'store_manager', 'role' => 'store_manager', 'phone' => '0999000006', 'status' => 'active'],
+    ['name' => 'Ahmed Al Hassan', 'password' => '999', 'department' => 'store_management', 'job_title' => 'store_manager', 'role' => 'store_manager', 'phone' => '0999001001', 'status' => 'active'],
+    ['name' => 'Mohammad Al Ali', 'password' => '999', 'department' => 'store_management', 'job_title' => 'store_manager', 'role' => 'store_manager', 'phone' => '0999001002', 'status' => 'active'],
+    ['name' => 'Ali Al Masri', 'password' => '999', 'department' => 'store_management', 'job_title' => 'store_manager', 'role' => 'store_manager', 'phone' => '0999001003', 'status' => 'active'],
+    ['name' => 'Omar Al Shami', 'password' => '999', 'department' => 'store_management', 'job_title' => 'store_manager', 'role' => 'store_manager', 'phone' => '0999001004', 'status' => 'active'],
+    ['name' => 'Youssef Al Khatib', 'password' => '999', 'department' => 'store_management', 'job_title' => 'store_manager', 'role' => 'store_manager', 'phone' => '0999001005', 'status' => 'active'],
+
+    // Store Employees
+    ['name' => 'Nour Al Hakim', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999000002', 'status' => 'active'],
+    ['name' => 'Wissam Saed', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999000003', 'status' => 'active'],
+    ['name' => 'Hadi Al Latif', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999000004', 'status' => 'active'],
+    ['name' => 'Samira Al Nouri', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999000005', 'status' => 'active'],
+    ['name' => 'Khaled Al Basha', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001006', 'status' => 'active'],
+    ['name' => 'Hassan Al Najjar', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001007', 'status' => 'active'],
+    ['name' => 'Hussein Al Azzam', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001008', 'status' => 'active'],
+    ['name' => 'Ibrahim Al Hamwi', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001009', 'status' => 'active'],
+    ['name' => 'Mustafa Al Rifai', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001010', 'status' => 'active'],
+    ['name' => 'Nasser Al Halabi', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001013', 'status' => 'active'],
+    ['name' => 'Tarek Al Deeb', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001014', 'status' => 'active'],
+    ['name' => 'Bilal Al Nabulsi', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001015', 'status' => 'active'],
+    ['name' => 'Karim Al Karam', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001016', 'status' => 'active'],
+    ['name' => 'Ziad Al Asaad', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001017', 'status' => 'active'],
+    ['name' => 'Hadi Al Zayani', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001018', 'status' => 'active'],
+    ['name' => 'Fadi Al Jaber', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001019', 'status' => 'active'],
+    ['name' => 'Walid Al Sayegh', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001020', 'status' => 'active'],
+    ['name' => 'Maher Al Husseini', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001021', 'status' => 'active'],
+    ['name' => 'Hamza Al Salman', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001022', 'status' => 'active'],
+    ['name' => 'Saeed Al Fares', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001023', 'status' => 'active'],
+    ['name' => 'Adel Al Sharif', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001024', 'status' => 'active'],
+    ['name' => 'Sami Al Hariri', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001025', 'status' => 'active'],
+    ['name' => 'Rana Al Hamad', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001026', 'status' => 'active'],
+    ['name' => 'Maya Al Saleh', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001027', 'status' => 'active'],
+    ['name' => 'Yara Al Haj', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001028', 'status' => 'active'],
+    ['name' => 'Rasha Al Khalil', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001029', 'status' => 'active'],
+    ['name' => 'Nabil Al Zain', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001030', 'status' => 'active'],
+    ['name' => 'Bassam Al Rawi', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001031', 'status' => 'active'],
+    ['name' => 'Salma Al Khatib', 'password' => '12345', 'department' => 'store_management', 'job_title' => 'store_employee', 'role' => 'store_employee', 'phone' => '0999001032', 'status' => 'active'],
+];
