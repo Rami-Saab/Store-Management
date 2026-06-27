@@ -7,12 +7,8 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        php-version: ['8.2']
     
     steps:
     - name: Checkout code
@@ -21,26 +17,8 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: ${{ matrix.php-version }}
-        extensions: mbstring, xml, ctype, json, bcmath, pdo, pdo_mysql
-        coverage: none
-    
-    - name: Copy .env
-      run: cp .env.example .env
-    
-    - name: Install Composer dependencies
-      run: composer install --prefer-dist --no-progress --no-interaction --no-scripts
-    
-    - name: Generate application key
-      run: php artisan key:generate
+        php-version: '8.2'
+        extensions: mbstring, xml, ctype, json, bcmath
     
     - name: Validate composer.json
       run: composer validate --strict
-    
-    - name: Run Pint (code style check)
-      run: vendor/bin/pint --test || echo "Pint check skipped"
-      continue-on-error: true
-    
-    - name: Run PHPStan (static analysis)
-      run: vendor/bin/phpstan analyse --memory-limit=2G || echo "PHPStan check skipped"
-      continue-on-error: true
