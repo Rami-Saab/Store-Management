@@ -1,416 +1,395 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="350" alt="Laravel Logo" />
-  <br/>
-  <strong>Multi-Branch Store Management System</strong>
-  <br/>
-  <sub>Enterprise-grade branch & inventory orchestration platform built with Laravel 10</sub>
-</p>
+# Store Management System
+
+Enterprise-grade multi-branch retail management platform built on Laravel 10.
 
 <p align="center">
   <img src="https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php&logoColor=white" />
-  <img src="https://img.shields.io/badge/Laravel-10.x-FF2D20?logo=laravel&logoColor=white" />
+  <img src="https://img.shields.io/badge/Laravel-10.48-FF2D20?logo=laravel&logoColor=white" />
   <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" />
-  <img src="https://img.shields.io/badge/Pest-Tests-9F4AFB?logo=pest&logoColor=white" />
+  <img src="https://img.shields.io/badge/PHPUnit-Tests-9F4AFB?logo=phpunit&logoColor=white" />
   <img src="https://img.shields.io/badge/PHPStan-Level%205-7A08FA?logo=phpstan&logoColor=white" />
-  <img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?logo=githubactions&logoColor=white" />
 </p>
 
----
+## System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Load Balancer / CDN                     │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+┌───────▼──────┐ ┌────▼─────┐ ┌────▼─────┐
+│  Web Server  │ │  Queue   │ │  Redis   │
+│   (PHP-FPM)  │ │  Worker  │ │  Cache   │
+└───────┬──────┘ └────┬─────┘ └────┬─────┘
+        │              │              │
+        └──────────────┼──────────────┘
+                       │
+              ┌────────▼────────┐
+              │   MySQL 8.0     │
+              │   (Primary)     │
+              └─────────────────┘
+```
 
 ## Table of Contents
 
-- [Architectural Excellence](#architectural-excellence)
-- [Design Patterns & Principles](#design-patterns--principles)
-- [Advanced Features](#advanced-features)
-- [Performance Optimizations](#performance-optimizations)
-- [Security Architecture](#security-architecture)
-- [Type Safety & Code Quality](#type-safety--code-quality)
-- [Event-Driven Architecture](#event-driven-architecture)
-- [Scalability Considerations](#scalability-considerations)
+- [Architecture Overview](#architecture-overview)
+- [Getting Started](#getting-started)
+- [Environment Configuration](#environment-configuration)
+- [Core Architecture](#core-architecture)
+- [Performance Strategy](#performance-strategy)
+- [Security Model](#security-model)
+- [Deployment & Scaling](#deployment--scaling)
 - [Technology Stack](#technology-stack)
-- [License](#license)
 
----
+## Architecture Overview
 
-## Architectural Excellence
+### Service-Oriented Architecture
 
-### Service-Oriented Architecture (SOA)
+The application implements a strict service-layer pattern that decouples business logic from HTTP concerns:
 
-The application implements a rigorous **service-layer pattern** that completely decouples business logic from HTTP concerns. Controllers are deliberately kept under 50 lines, serving purely as orchestration layers that delegate to specialized services:
+- **Controllers** (<50 lines): Pure orchestration layers delegating to services
+- **Services**: Domain logic encapsulation with transaction management
+- **Repositories**: Data access abstraction (Eloquent wrapper)
+- **Events**: Domain state changes for loose coupling
+- **Listeners**: Asynchronous side effects (cache invalidation, notifications)
 
-- **`StoreCrudService`** — Handles atomic CRUD operations wrapped in database transactions
-- **`StoreSearchService`** — Encapsulates complex search logic with stored procedure integration
-- **`StoreBrochureService`** — Manages PDF rendering, caching, and chunked uploads
-- **`AssignmentService`** — Coordinates staff-to-branch synchronization with conflict resolution
-- **`StoreStatsService`** — Computes dashboard analytics with caching strategies
+### Design Patterns
 
-This architecture enables **horizontal scaling** of business logic, **unit testing** in isolation, and **code reusability** across different interfaces (HTTP, CLI, API).
+| Pattern | Implementation | Benefit |
+|---------|---------------|---------|
+| Repository | Service layer as data abstraction | Swappable data sources, testability |
+| Strategy | Role-based scoping via `StoreScopeStrategy` | Non-breaking role additions |
+| Observer | Event-driven cache invalidation | Automatic cache consistency |
+| Factory | Domain object creation | Consistent object instantiation |
+| Decorator | Middleware pipeline | Cross-cutting concerns |
 
-### Strict Type Safety
+## Getting Started
 
-Every PHP file declares `strict_types=1`, enforcing compile-time type checking. Models include comprehensive **PHPDoc properties** for IDE autocomplete, and all methods feature complete **type hints**:
+### Prerequisites
+
+- PHP >= 8.2
+- Composer >= 2.0
+- MySQL >= 8.0
+- Node.js >= 18
+- Redis (optional, for cache/queue)
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/Rami-Saab/Store-Management.git
+cd Store-Management
+
+# Install dependencies
+composer install --no-interaction
+npm install
+
+# Environment setup
+cp .env.example .env
+php artisan key:generate
+
+# Database configuration
+# Edit .env with your database credentials
+php artisan migrate --force
+php artisan db:seed --force
+
+# Build assets
+npm run build
+
+# Clear caches
+php artisan optimize:clear
+```
+
+### Development Server
+
+```bash
+php artisan serve
+npm run dev
+```
+
+## Environment Configuration
+
+### Required Environment Variables
+
+```env
+APP_NAME="Store Management"
+APP_ENV=local
+APP_KEY=base64:...
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+# Database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=store_management
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+
+# Cache
+CACHE_DRIVER=redis
+QUEUE_CONNECTION=redis
+SESSION_DRIVER=redis
+
+# Redis
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+```
+
+### Production Configuration
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+LOG_CHANNEL=stack
+
+# Performance
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+# Security
+SESSION_SECURE_COOKIE=true
+SANCTUM_STATEFUL_DOMAINS=yourdomain.com
+```
+
+## Core Architecture
+
+### Service Layer Pattern
+
+Controllers delegate to specialized services:
+
+```php
+// Controller: Pure orchestration
+class StoreController extends Controller
+{
+    public function __construct(
+        private readonly StoreCrudService $crudService,
+        private readonly StoreSearchService $searchService
+    ) {}
+    
+    public function index(Request $request): Response
+    {
+        return $this->searchService->search($request->validated());
+    }
+}
+
+// Service: Business logic with transactions
+class StoreCrudService
+{
+    public function create(array $data): Store
+    {
+        return DB::transaction(fn () => 
+            Store::create($data)
+        );
+    }
+}
+```
+
+### Event-Driven Architecture
+
+Domain events trigger side effects:
+
+```php
+// Event emission
+Event::dispatch(new StoreCreated($store, auth()->id()));
+
+// Listener: Cache invalidation
+class InvalidateStoreCache
+{
+    public function handle(StoreCreated|StoreUpdated|StoreDeleted $event): void
+    {
+        Cache::tags(['stores'])->flush();
+    }
+}
+```
+
+### Type Safety
+
+All files declare `strict_types=1` with comprehensive type hints:
 
 ```php
 declare(strict_types=1);
 
-class Store extends Model
+class StoreService
 {
-    /** @property int $id */
-    /** @property string $name */
-    /** @property-read Province $province */
-    
-    public function scopeFilterName(Builder $query, ?string $name): Builder
+    public function update(int $id, array $data): Store
     {
-        // Type-safe query building
+        $store = Store::findOrFail($id);
+        $store->update($data);
+        return $store;
     }
 }
 ```
 
-This eliminates entire classes of runtime errors and enables **PHPStan Level 5** static analysis to catch bugs before execution.
+## Performance Strategy
 
----
+### Database Optimization
 
-## Design Patterns & Principles
+- **Eager Loading**: Relations preloaded via `with()` to prevent N+1
+- **Query Scopes**: Reusable query fragments for complex filters
+- **Composite Indexes**: Strategic indexing on frequently queried columns
+- **Stored Procedures**: Complex searches executed database-side
+- **Connection Pooling**: Laravel's connection management reduces overhead
 
-### SOLID Principles in Practice
+### Caching Strategy
 
-**Single Responsibility** — Each service handles one domain concern. `StoreCrudService` only manages persistence, while `StoreBrochureService` only handles file operations.
-
-**Open/Closed** — New features are added through **event listeners** and **middleware** without modifying existing services. The `InvalidateStoreCache` listener automatically handles cache clearing for any store modification.
-
-**Dependency Inversion** — All services depend on abstractions (interfaces) injected via Laravel's container. Controllers receive services through constructor injection, enabling easy mocking and testing.
-
-### Repository Pattern Implementation
-
-The service layer acts as a **repository abstraction**, hiding Eloquent implementation details from controllers. This allows:
-
-- **Swapping data sources** (MySQL → PostgreSQL) without controller changes
-- **Caching at the repository level** transparently
-- **Complex query composition** in services, keeping controllers thin
-
-### Strategy Pattern for Authorization
-
-The `StoreScopeService` implements a **strategy pattern** for role-based data scoping:
+Multi-layer caching with tag-based invalidation:
 
 ```php
-interface StoreScopeStrategy
-{
-    public function applyScope(Builder $query, User $user): Builder;
-}
+// Application cache with tags
+Cache::tags(['stores'])->remember("store.{$id}", 7200, fn () =>
+    Store::with(['employees', 'products'])->findOrFail($id)
+);
 
-class AdminScopeStrategy implements StoreScopeStrategy
-{
-    public function applyScope(Builder $query, User $user): Builder
-    {
-        return $query; // No restrictions for admins
-    }
-}
-
-class ManagerScopeStrategy implements StoreScopeStrategy
-{
-    public function applyScope(Builder $query, User $user): Builder
-    {
-        return $query->where('manager_id', $user->id);
-    }
-}
+// Cache invalidation
+Cache::tags(['stores'])->flush();
 ```
 
-This makes adding new roles or modifying access rules **non-breaking** changes.
+### Queue-Based Processing
 
----
-
-## Advanced Features
-
-### Event-Driven Cache Invalidation
-
-The system implements **automatic cache invalidation** through Laravel's event system:
-
-```php
-Event::listen(StoreCreated::class, InvalidateStoreCache::class);
-Event::listen(StoreUpdated::class, InvalidateStoreCache::class);
-Event::listen(StoreDeleted::class, InvalidateStoreCache::class);
-```
-
-When any store modification occurs, the `InvalidateStoreCache` listener automatically clears relevant caches. This **eliminates cache staleness bugs** and removes manual cache clearing from business logic.
-
-### Queue-Based Asynchronous Processing
-
-Heavy operations like brochure uploads are offloaded to **queue jobs**:
+Heavy operations offloaded to queue workers:
 
 ```php
 class ProcessBrochureUpload implements ShouldQueue
 {
     public int $tries = 3;
     public int $timeout = 300;
-    
-    public function handle(StoreBrochureService $service): void
-    {
-        // Process PDF asynchronously
-    }
+    public int $backoff = [10, 30, 60];
 }
 ```
 
-This provides:
-- **Non-blocking user experience** — uploads don't tie up HTTP workers
-- **Automatic retries** on failure with exponential backoff
-- **Horizontal scaling** — multiple queue workers process jobs in parallel
-- **Dead letter queues** for failed job analysis
-
-### Chunked File Uploads
-
-Large PDF brochures are uploaded in **chunks** to bypass server size limits:
-
-- **Resume capability** — interrupted uploads can be resumed
-- **Memory efficiency** — chunks are processed individually
-- **Progress tracking** — real-time upload progress for users
-- **Concurrent uploads** — multiple chunks can be uploaded in parallel
-
-### Stored Procedure Integration
-
-Complex store searches are offloaded to **MySQL stored procedures** for performance:
-
-```sql
-CREATE PROCEDURE SearchStores(
-    IN p_name VARCHAR(255),
-    IN p_province_id INT,
-    IN p_status VARCHAR(50),
-    IN p_phone VARCHAR(20)
-)
-```
-
-This reduces **N+1 query problems** and leverages database-side optimizations for complex joins and filtering.
-
----
-
-## Performance Optimizations
-
-### Database-Level Optimizations
-
-- **Eager Loading** — Relations are preloaded using `with()` to prevent N+1 queries
-- **Query Scopes** — Reusable query fragments compose complex filters efficiently
-- **Indexing Strategy** — Composite indexes on frequently queried columns
-- **Stored Procedures** — Complex searches execute on the database server
-- **Connection Pooling** — Laravel's connection management reduces overhead
-
-### Caching Strategy
-
-The application implements a **multi-layer caching strategy**:
-
-```php
-// Cache store lists for 1 hour
-Cache::remember('stores.active', 3600, fn () => 
-    Store::active()->with(['province', 'manager'])->get()
-);
-
-// Cache individual stores with tags
-Cache::tags(['stores'])->remember("store.{$id}", 7200, fn () =>
-    Store::with(['employees', 'products'])->findOrFail($id)
-);
-```
-
-- **Tag-based invalidation** — Clear entire cache groups atomically
-- **Automatic expiration** — Time-to-live prevents stale data
-- **Cache warming** — Pre-populate caches during deployment
-
-### Frontend Performance
-
-- **Vite** — Fast HMR and optimized production builds
-- **Asset Versioning** — Cache-busting through file hashes
-- **Lazy Loading** — JavaScript modules loaded on demand
-- **Tailwind CSS** — Purge unused styles for minimal CSS size
-
----
-
-## Security Architecture
+## Security Model
 
 ### Defense in Depth
 
-The application implements **multiple security layers**:
+1. **Rate Limiting**: Per-endpoint limits prevent abuse
+2. **Input Validation**: Form Requests sanitize before services
+3. **Authorization Gates**: Policies check permissions pre-access
+4. **SQL Injection**: Eloquent parameter binding by default
+5. **XSS Protection**: Blade auto-escapes; CSP headers configured
+6. **CSRF Protection**: Tokens on all state-changing requests
+7. **Audit Trails**: `created_by`/`updated_by` track modifications
 
-1. **Rate Limiting** — Configurable limits per endpoint prevent abuse:
-   ```php
-   RateLimiter::for('login', fn (Request $r) => 
-       Limit::perMinute(5)->by($r->ip() . '|' . $r->input('email'))
-   );
-   ```
+### RBAC Implementation
 
-2. **Input Validation** — Form Requests sanitize and validate before reaching services
-3. **Authorization Gates** — Policies check permissions before data access
-4. **SQL Injection Prevention** — Eloquent parameter binding by default
-5. **XSS Protection** — Blade auto-escapes output; CSP headers configured
-6. **CSRF Protection** — Tokens on all state-changing requests
-7. **Audit Trails** — `created_by` and `updated_by` track all modifications
+Using Spatie Laravel Permission:
 
-### Role-Based Access Control (RBAC)
-
-Using **Spatie Laravel Permission**, the system implements:
-
-- **Hierarchical roles** — Roles can inherit permissions from parent roles
-- **Permission caching** — Permission checks cached for performance
-- **Dynamic permissions** — Runtime permission assignment without code changes
-- **Middleware integration** — Route-level permission enforcement
+- **Hierarchical roles**: Roles inherit from parent roles
+- **Permission caching**: Checks cached for performance
+- **Dynamic permissions**: Runtime assignment without code changes
+- **Middleware integration**: Route-level enforcement
 
 ### Secure File Handling
 
-- **Storage abstraction** — Files stored outside web root
-- **Signed URLs** — Temporary, expiring download links
-- **MIME validation** — File type verification on upload
-- **Chunked uploads** — Memory-efficient processing
+- **Storage abstraction**: Files outside web root
+- **Signed URLs**: Temporary, expiring download links
+- **MIME validation**: File type verification on upload
+- **Chunked uploads**: Memory-efficient processing
 
----
-
-## Type Safety & Code Quality
-
-### Static Analysis with PHPStan
-
-PHPStan Level 5 configuration enforces:
-
-- **Strict comparison rules** — Prevents type coercion bugs
-- **Deprecation detection** — Identifies outdated code usage
-- **Unused code detection** — Removes dead code
-- **Generic type checking** — Ensures collection type safety
-
-```bash
-composer stan  # Runs PHPStan analysis
-```
-
-### Automated Code Formatting
-
-Laravel Pint ensures **consistent code style** across the project:
-
-```bash
-composer pint      # Check code style
-composer pint:fix  # Auto-fix style issues
-```
-
-All code follows **PSR-12** standards automatically.
-
-### Modern Testing with Pest
-
-Pest PHP provides **expressive, readable tests**:
-
-```php
-test('admin can create store', function () {
-    $admin = User::factory()->admin()->create();
-    
-    actingAs($admin)
-        ->post(route('stores.store'), Store::factory()->raw())
-        ->assertRedirect(route('stores.index'));
-        
-    expect(Store::count())->toBe(1);
-});
-```
-
-- **Database transactions** — Tests rolled back automatically
-- **Factories** — Consistent test data generation
-- **Parallel execution** — Tests run concurrently for speed
-
----
-
-## Event-Driven Architecture
-
-### Domain Events
-
-The system emits **domain events** for significant state changes:
-
-```php
-class StoreCreated
-{
-    public function __construct(
-        public readonly Store $store,
-        public readonly ?int $actorId = null
-    ) {}
-}
-```
-
-Events are **immutable data carriers** containing all relevant context.
-
-### Event Listeners
-
-Listeners respond to events **asynchronously**:
-
-```php
-class InvalidateStoreCache
-{
-    public function handle(StoreCreated|StoreUpdated|StoreDeleted $event): void
-    {
-        $this->storeService->flushStoreCaches();
-    }
-}
-```
-
-This enables:
-- **Loose coupling** — Event emitters don't know about listeners
-- **Extensibility** — Add new listeners without modifying existing code
-- **Audit logging** — All state changes can be logged centrally
-- **Notifications** — Email/SMS notifications triggered by events
-
-### Event Broadcasting
-
-Events can be **broadcasted to frontend** via Laravel Echo for real-time updates:
-
-```php
-class StoreUpdated implements ShouldBroadcast
-{
-    public function broadcastOn()
-    {
-        return new Channel('stores');
-    }
-}
-```
-
----
-
-## Scalability Considerations
+## Deployment & Scaling
 
 ### Horizontal Scaling
 
-The architecture supports **horizontal scaling**:
+The architecture supports horizontal scaling through:
 
-- **Stateless HTTP workers** — No session storage in PHP memory
-- **Queue-based processing** — Background jobs distributed across workers
-- **Cache layer** — Redis shared across all instances
-- **Database connection pooling** — Efficient connection reuse
+- **Stateless workers**: No session storage in PHP memory
+- **Shared cache**: Redis across all instances
+- **Queue distribution**: Background jobs across workers
+- **Connection pooling**: Efficient database connection reuse
 
-### Database Scalability
+### Database Scaling
 
-- **Read replicas** — Read queries can be directed to replica servers
-- **Sharding readiness** — Store data can be sharded by region
-- **Query optimization** — Stored procedures reduce database load
-- **Migration strategy** — Zero-downtime migrations supported
+- **Read replicas**: Read queries directed to replicas
+- **Sharding readiness**: Data sharded by region
+- **Query optimization**: Stored procedures reduce load
+- **Zero-downtime migrations**: Supported via Laravel
 
-### Caching Strategy
+### Production Deployment
 
-- **Multi-tier caching** — Application cache + CDN + browser cache
-- **Cache warming** — Pre-populate caches during deployment
-- **Cache stampede prevention** — Lock mechanisms prevent thundering herds
-- **Cache invalidation** — Tag-based invalidation for granular control
+```bash
+# Optimization
+php artisan optimize
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
----
+# Queue workers
+php artisan queue:work --daemon --tries=3 --timeout=300
+
+# Supervisor configuration (recommended)
+[program:store-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/app/artisan queue:work --sleep=3 --tries=3
+autostart=true
+autorestart=true
+user=www-data
+numprocs=5
+redirect_stderr=true
+stdout_logfile=/var/www/app/storage/logs/worker.log
+```
+
+### CI/CD Pipeline
+
+GitHub Actions workflow includes:
+
+- **Linting**: PHPStan Level 5 analysis
+- **Testing**: PHPUnit with coverage
+- **Security**: Dependency vulnerability scanning
+- **Build**: Asset compilation
+- **Deployment**: Automated staging/production
 
 ## Technology Stack
 
 | Layer | Technology | Rationale |
 |-------|------------|-----------|
-| Backend | PHP 8.2+ | Latest features, JIT compilation, strict typing |
-| Framework | Laravel 10 | Stable LTS release, native support for PHP 8.2 |
-| Auth | Laravel Sanctum 3.3 | Lightweight API authentication, SPA support |
-| RBAC | Spatie Permission 5.0 | Mature, feature-rich permission system |
-| Data Objects | Spatie Data 3.0 | Type-safe DTOs, validation, transformation |
-| Frontend | Blade + Alpine.js | Server-side rendering, progressive enhancement |
-| Build | Vite 5.0 | Fast HMR, optimized production builds |
-| CSS | Tailwind CSS 3.4 | Utility-first, highly customizable |
-| PDF | PDF.js 3.11 | Client-side rendering, no server dependencies |
-| Headless PDF | Browsershot 3.61 | PDF generation via Chrome headless |
-| Testing | Pest PHP 2.0 | Modern syntax, parallel execution |
+| Backend | PHP 8.2+ | JIT compilation, strict typing, modern features |
+| Framework | Laravel 10.48 | Stable LTS, PHP 8.2 native support |
+| Auth | Laravel Sanctum 3.3 | Lightweight API auth, SPA support |
+| RBAC | Spatie Permission 5.0 | Mature permission system |
+| Data Objects | Spatie Data 3.0 | Type-safe DTOs, validation |
+| Frontend | Blade + Alpine.js | SSR, progressive enhancement |
+| Build | Vite 5.0 | Fast HMR, optimized builds |
+| CSS | Tailwind CSS 3.4 | Utility-first, customizable |
+| PDF | PDF.js 3.11 | Client-side rendering |
+| Testing | PHPUnit 10.0 | Mature testing framework |
 | Static Analysis | PHPStan 1.10 | Type safety, bug detection |
-| Code Formatting | Laravel Pint 1.13 | Automated PSR-12 compliance |
-| Database | MySQL 8.0 | JSON support, window functions, CTEs |
-| Cache/Queue | Redis | In-memory performance, pub/sub support |
+| Code Formatting | Laravel Pint 1.13 | PSR-12 compliance |
+| Database | MySQL 8.0 | JSON, window functions, CTEs |
+| Cache/Queue | Redis | In-memory performance, pub/sub |
 
----
+## Code Quality Standards
+
+### Static Analysis
+
+```bash
+# PHPStan Level 5 analysis
+composer stan
+
+# Laravel Pint formatting
+composer pint:fix
+```
+
+### Testing
+
+```bash
+# Run all tests
+composer test
+
+# With coverage
+composer test:coverage
+```
+
+### Quality Gates
+
+- PHPStan Level 5: No errors allowed
+- Test coverage: >80% for critical paths
+- PSR-12 compliance: Enforced via Pint
+- Security advisories: Blocked on critical CVEs
 
 ## License
 
-This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT License - see [LICENSE](LICENSE) for details.
