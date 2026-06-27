@@ -1,15 +1,14 @@
-<?php // Name : Rodain Gouzlan Id:
+<?php
+
+declare(strict_types=1);
 
 namespace App\Models;
 
-// نموذج المستخدمين في النظام (مدير النظام، مدير فرع، موظف فرع، وغيرهم).
-// يتم استخدامه أيضاً كبديل عن نموذج Employee في سياق تعيينات الفروع.
 use App\Support\UserContact;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,35 +16,45 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Model: User
+ * User Model
  *
- * يمثل حسابات المستخدمين ويربطهم بالفروع والأدوار والصلاحيات.
- * يعتمد على:
- * - العلاقة مع Store عبر store_user
- * - الدور role المباشر أو أدوار Pivot (roles)
+ * Represents user accounts in the system (admin, store managers, employees).
+ * Handles role-based access control and store assignments.
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string|null $department
+ * @property int|null $department_id
+ * @property string|null $job_title
+ * @property string $role
+ * @property int|null $store_id
+ * @property string|null $phone
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ *
+ * @property-read string|null $staff_id
+ * @property-read string $phone
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Store> $stores
+ * @property-read Department|null $department
+ * @property-read Store|null $assignedStore
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Role> $roles
+ * @property-read Store|null $managedStore
  */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    // كاش داخلي لنتائج التحقق من الدور والصلاحيات داخل نفس الطلب.
-    /**
-     * Cache results of role/permission checks within the current request.
-     */
     protected array $roleCheckCache = [];
     protected array $permissionCheckCache = [];
 
-    // كاش لحالة توفر جداول الأدوار/الصلاحيات لتفادي استعلامات متكررة.
-    /**
-     * Cache schema table availability within the current request.
-     */
     protected static ?bool $rolesPivotAvailable = null;
     protected static ?bool $permissionsPivotAvailable = null;
 
-    // الحقول القابلة للتعبئة الجماعية (Mass Assignment).
-    /**
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -59,24 +68,15 @@ class User extends Authenticatable
         'status',
     ];
 
-    // الحقول الحساسة التي لا يجب إرجاعها في JSON.
-    /**
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    // تحويلات تلقائية للحقول عند القراءة/الكتابة.
-    /**
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
-    // معرّف الموظف لواجهات العرض (alias للـ id).
     public function getStaffIdAttribute(): ?string
     {
         if (! $this->getKey()) {
@@ -86,49 +86,41 @@ class User extends Authenticatable
         return (string) $this->getKey();
     }
 
-    // تنسيق رقم الهاتف عند القراءة (عرض موحد).
-    public function getPhoneAttribute($value): string
+    public function getPhoneAttribute(?string $value): string
     {
         return UserContact::phone($value);
     }
 
-    // تنسيق رقم الهاتف عند الحفظ (إزالة الزوائد).
-    public function setPhoneAttribute($value): void
+    public function setPhoneAttribute(string|null $value): void
     {
         $this->attributes['phone'] = UserContact::phone($value, false);
     }
 
-    // علاقة المستخدم بالفروع عبر pivot store_user.
     public function stores(): BelongsToMany
     {
         return $this->belongsToMany(Store::class)->withTimestamps();
     }
 
-    // علاقة المستخدم بقسمه (Department).
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
     }
 
-    // الفرع المعين للمستخدم بشكل مباشر عبر store_id.
     public function assignedStore(): BelongsTo
     {
         return $this->belongsTo(Store::class, 'store_id');
     }
 
-    // أدوار المستخدم عبر جدول role_user (إن كان موجوداً).
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
-    // الفرع الذي يديره المستخدم كمدير فرع.
     public function managedStore(): HasOne
     {
         return $this->hasOne(Store::class, 'manager_id');
     }
 
-    // التحقق من امتلاك المستخدم لدور معين مع استخدام الكاش.
     public function hasRole(string $slug): bool
     {
         if (array_key_exists($slug, $this->roleCheckCache)) {
@@ -151,7 +143,6 @@ class User extends Authenticatable
         return $this->roleCheckCache[$slug] = ($columnRole === $slug);
     }
 
-    // التحقق من امتلاك المستخدم لصلاحية معينة مع مراعاة الأدوار والقيود.
     public function hasPermission(string $slug): bool
     {
         if (array_key_exists($slug, $this->permissionCheckCache)) {
@@ -225,7 +216,6 @@ class User extends Authenticatable
         return $this->permissionCheckCache[$slug] = false;
     }
 
-    // فحص توفر جداول الأدوار في قاعدة البيانات.
     private static function rolesPivotReady(): bool
     {
         if (self::$rolesPivotAvailable !== null) {
@@ -237,7 +227,6 @@ class User extends Authenticatable
         return self::$rolesPivotAvailable;
     }
 
-    // فحص توفر جداول الصلاحيات في قاعدة البيانات.
     private static function permissionsPivotReady(): bool
     {
         if (self::$permissionsPivotAvailable !== null) {
@@ -251,7 +240,6 @@ class User extends Authenticatable
         return self::$permissionsPivotAvailable;
     }
 
-    // تحميل أدوار وصلاحيات المستخدم عند الحاجة فقط.
     private function loadRolePermissionsIfNeeded(): void
     {
         if (! self::permissionsPivotReady()) {
@@ -267,7 +255,6 @@ class User extends Authenticatable
         }
     }
 
-    // Scope: مدراء الفروع المؤهلون (نشطون).
     public function scopeEligibleManagers(Builder $query): Builder
     {
         return $query
@@ -275,11 +262,20 @@ class User extends Authenticatable
             ->where('status', 'active');
     }
 
-    // Scope: موظفو الفروع النشطون.
     public function scopeStoreEmployees(Builder $query): Builder
     {
         return $query
             ->whereIn('role', ['store_employee', 'employee'])
             ->where('status', 'active');
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function scopeInactive(Builder $query): Builder
+    {
+        return $query->where('status', 'inactive');
     }
 }

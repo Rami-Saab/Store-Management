@@ -1,0 +1,72 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: store-management-app
+        restart: unless-stopped
+        working_dir: /var/www/html
+        volumes:
+            - ./:/var/www/html
+        networks:
+            - store-network
+        depends_on:
+            - db
+            - redis
+
+    nginx:
+        image: nginx:alpine
+        container_name: store-management-nginx
+        restart: unless-stopped
+        ports:
+            - "8000:80"
+        volumes:
+            - ./:/var/www/html
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - store-network
+        depends_on:
+            - app
+
+    db:
+        image: mysql:8.0
+        container_name: store-management-db
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - db-data:/var/lib/mysql
+        networks:
+            - store-network
+
+    redis:
+        image: redis:alpine
+        container_name: store-management-redis
+        restart: unless-stopped
+        networks:
+            - store-network
+
+    queue:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: store-management-queue
+        restart: unless-stopped
+        command: php artisan queue:work --sleep=3 --tries=3
+        volumes:
+            - ./:/var/www/html
+        networks:
+            - store-network
+        depends_on:
+            - db
+            - redis
+
+networks:
+    store-network:
+        driver: bridge
+
+volumes:
+    db-data:

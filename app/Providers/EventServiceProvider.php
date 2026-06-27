@@ -1,22 +1,21 @@
-<?php // Name : Rodain Gouzlan Id:
+<?php
+
+declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Events\StoreCreated;
+use App\Events\StoreDeleted;
+use App\Events\StoreUpdated;
+use App\Listeners\InvalidateStoreCache;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
-/**
- * Service Provider للأحداث (Events) والمستمعين (Listeners).
- *
- * هذا الملف جزء من هيكل Laravel القياسي.
- * في مشروعنا الحالي لا توجد أحداث خاصة بوحدة الأفرع، لكنه يبقى جاهزاً للتوسع.
- */
 class EventServiceProvider extends ServiceProvider
 {
     /**
-     * ربط الأحداث (Events) بالمستمعين (Listeners).
+     * The event listener mappings for the application.
      *
      * @var array<class-string, array<int, class-string>>
      */
@@ -24,14 +23,24 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+
+        StoreCreated::class => [
+            InvalidateStoreCache::class,
+        ],
+
+        StoreUpdated::class => [
+            InvalidateStoreCache::class,
+        ],
+
+        StoreDeleted::class => [
+            InvalidateStoreCache::class,
+        ],
     ];
 
     /**
-     * تسجيل أحداث التطبيق إن وجدت.
-     *
-     * @return void
+     * Register any events for your application.
      */
-    public function boot()
+    public function boot(): void
     {
         //
     }
