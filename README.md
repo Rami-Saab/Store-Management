@@ -3,12 +3,12 @@
   <br/>
   <strong>Multi-Branch Store Management System</strong>
   <br/>
-  <sub>Enterprise-grade branch & inventory orchestration platform built with Laravel 11</sub>
+  <sub>Enterprise-grade branch & inventory orchestration platform built with Laravel 10</sub>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php&logoColor=white" />
-  <img src="https://img.shields.io/badge/Laravel-11.x-FF2D20?logo=laravel&logoColor=white" />
+  <img src="https://img.shields.io/badge/Laravel-10.x-FF2D20?logo=laravel&logoColor=white" />
   <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white" />
   <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" />
   <img src="https://img.shields.io/badge/Pest-Tests-9F4AFB?logo=pest&logoColor=white" />
@@ -394,15 +394,15 @@ The architecture supports **horizontal scaling**:
 | Layer | Technology | Rationale |
 |-------|------------|-----------|
 | Backend | PHP 8.2+ | Latest features, JIT compilation, strict typing |
-| Framework | Laravel 11 | Modern architecture, native support for PHP 8.2 |
-| Auth | Laravel Sanctum 4.0 | Lightweight API authentication, SPA support |
-| RBAC | Spatie Permission 6.0 | Mature, feature-rich permission system |
-| Data Objects | Spatie Data 4.0 | Type-safe DTOs, validation, transformation |
+| Framework | Laravel 10 | Stable LTS release, native support for PHP 8.2 |
+| Auth | Laravel Sanctum 3.3 | Lightweight API authentication, SPA support |
+| RBAC | Spatie Permission 5.0 | Mature, feature-rich permission system |
+| Data Objects | Spatie Data 3.0 | Type-safe DTOs, validation, transformation |
 | Frontend | Blade + Alpine.js | Server-side rendering, progressive enhancement |
 | Build | Vite 5.0 | Fast HMR, optimized production builds |
 | CSS | Tailwind CSS 3.4 | Utility-first, highly customizable |
-| PDF | PDF.js 4.0 | Client-side rendering, no server dependencies |
-| Headless PDF | Browsershot 4.0 | PDF generation via Chrome headless |
+| PDF | PDF.js 3.11 | Client-side rendering, no server dependencies |
+| Headless PDF | Browsershot 3.61 | PDF generation via Chrome headless |
 | Testing | Pest PHP 2.0 | Modern syntax, parallel execution |
 | Static Analysis | PHPStan 1.10 | Type safety, bug detection |
 | Code Formatting | Laravel Pint 1.13 | Automated PSR-12 compliance |
