@@ -4,7 +4,11 @@
 /storage/*.key
 /vendor
 .env
+.env.*
 .env.backup
+.env.local
+.env.production
+.env.staging
 .phpunit.result.cache
 docker-compose.override.yml
 Homestead.json
@@ -13,3 +17,6 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+user-credentials.txt
+*.credentials.txt
+*.secret
